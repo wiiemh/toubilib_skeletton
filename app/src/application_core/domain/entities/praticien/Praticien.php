@@ -2,7 +2,7 @@
 
 namespace toubilib\core\domain\entities\praticien;
 
-
+//entité practicien avec ces informations//
 class Praticien
 {
    private string $nom;
@@ -19,7 +19,7 @@ class Praticien
         $this->specialite = $specialite;
     }
 
-    // Getters
+    //méthode d'accès aux attributs(get)//
     public function getNom(): string { return $this->nom; }
     public function getPrenom(): string { return $this->prenom; }
     public function getVille(): string { return $this->ville; }
