@@ -12,16 +12,12 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-/**
- * IMPORTANT en Slim 4 : ajouter le routing middleware
- * Sinon => HttpNotFoundException même si les routes existent.
- */
+
 $app->addRoutingMiddleware();
 
-// (optionnel) jolis messages d’erreurs en dev
+
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-// --- Connexion PDO Postgres ---
 $host = getenv('DB_HOST') ?: 'toubiprati.db';
 $port = getenv('DB_PORT') ?: '5432';
 $name = getenv('DB_NAME') ?: 'toubiprat';
@@ -36,11 +32,10 @@ $pdo = new PDO(
 );
 
 // --- Wiring ---
-$repo    = new PDOPraticienRepository($pdo);
+$repo = new PDOPraticienRepository($pdo);
 $service = new ServicePraticien($repo);
 
 // --- Routes de test ---
-// Accueil
 $app->get('/', function (Request $request, Response $response): Response {
     $response->getBody()->write('Bienvenue dans Toubilib API');
     return $response;
