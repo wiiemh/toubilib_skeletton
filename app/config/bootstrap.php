@@ -3,18 +3,26 @@
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use toubilib\api\middlewares\Cors;
+use DI\Container;
 
-$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ );
+require __DIR__ . '/../vendor/autoload.php';
+
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+$containerBuilder = new ContainerBuilder();
+$containerBuilder->addDefinitions([
+    'displayErrorDetails' => true
+]);
+$container = $containerBuilder->build();
 
-
+AppFactory::setContainer($container);
 $app = AppFactory::create();
 
 
 $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
-$app->addErrorMiddleware($c->get('displayErrorDetails'), false, false)
+$app->addErrorMiddleware($container->get('displayErrorDetails'), false, false)
     ->getDefaultErrorHandler()
     ->forceContentType('application/json')
 ;
