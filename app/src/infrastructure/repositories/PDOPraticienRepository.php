@@ -1,9 +1,9 @@
 <?php
-namespace toubilib\infrastructure\repositories; // ✅ pas "infra"
+namespace toubilib\infrastructure\repositories;
 
 use PDO;
 use toubilib\core\domain\entities\praticien\Praticien;
-use toubilib\core\domain\repositories\PraticienRepositoryInterface; // ✅ interface côté domain
+use toubilib\core\domain\repositories\PraticienRepositoryInterface; 
 
 final class PDOPraticienRepository implements PraticienRepositoryInterface
 {

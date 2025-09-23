@@ -7,7 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-// --- Connexion PDO Postgres ---
+
 $host = getenv('DB_HOST') ?: 'toubiprati.db';
 $port = getenv('DB_PORT') ?: '5432';
 $name = getenv('DB_NAME') ?: 'toubiprat';  // ✅
