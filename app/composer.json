@@ -20,10 +20,11 @@
     "phpstan/phpstan": "^1.11"
   },
   "autoload": {
-    "psr-4" : {
-      "toubilib\\api\\" : "./src/api",
-      "toubilib\\core\\" : "./src/application_core",
-      "toubilib\\infra\\" : "./src/infrastructure"
+  "psr-4": {
+    "toubilib\\api\\": "src/api/",
+    "toubilib\\core\\application\\": "src/application_core/application/",
+    "toubilib\\core\\domain\\": "src/domain/",
+    "toubilib\\infrastructure\\": "src/infrastructure/"
     }
   }
 }

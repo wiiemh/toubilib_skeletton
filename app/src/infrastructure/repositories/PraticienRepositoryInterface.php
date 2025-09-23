@@ -1,5 +1,7 @@
 <?php
-namespace toubilib\core\domain\repositories;
+declare(strict_types=1);
+
+namespace toubilib\infrastructure\repositories;
 
 use toubilib\core\domain\entities\praticien\Praticien;
 

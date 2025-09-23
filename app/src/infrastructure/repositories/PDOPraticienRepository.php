@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace toubilib\infrastructure\repositories;
 
 use PDO;
 use toubilib\core\domain\entities\praticien\Praticien;
-use toubilib\core\domain\repositories\PraticienRepositoryInterface; 
+
 
 final class PDOPraticienRepository implements PraticienRepositoryInterface
 {
@@ -15,8 +17,8 @@ final class PDOPraticienRepository implements PraticienRepositoryInterface
                 FROM praticien p
                 JOIN specialite s ON s.id = p.id_specialite
                 ORDER BY p.nom, p.prenom";
-        $stmt = $this->pdo->query($sql);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $list = [];
         foreach ($rows as $r) {
