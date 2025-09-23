@@ -1,20 +1,30 @@
 <?php
-
 namespace toubilib\core\application\usecases;
 
+use toubilib\core\application\dto\PraticienDTO;
+use toubilib\core\domain\repositories\PraticienRepositoryInterface;
+use toubilib\core\domain\entities\praticien\Praticien;
 
-
-
-class ServicePraticien implements ServicePraticienInterface
+final class ServicePraticien implements ServicePraticienInterface
 {
-    private PraticienRepositoryInterface $praticienRepository;
+    public function __construct(private PraticienRepositoryInterface $repo) {}
 
-    public function __construct(PraticienRepositoryInterface $praticienRepository)
+    public function listerPraticiens(): array
     {
-        $this->praticienRepository = $praticienRepository;
-    }
-
-    public function listerPraticiens(): array {
-    	
+        $entities = $this->repo->findAll();
+        $dtos = [];
+        $idAuto = 1;
+        /** @var Praticien $p */
+        foreach ($entities as $p) {
+            $dtos[] = new PraticienDTO(
+                $p->getid(),              
+                $p->getNom(),
+                $p->getPrenom(),
+                $p->getVille(),
+                $p->getEmail(),
+                $p->getSpecialite()
+            );
+        }
+        return $dtos;
     }
 }

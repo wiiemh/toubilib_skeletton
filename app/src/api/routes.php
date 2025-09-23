@@ -1,17 +1,16 @@
 <?php
 declare(strict_types=1);
 
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
-
-return function( \Slim\App $app):\Slim\App {
-
-
-
-    $app->get('/', HomeAction::class);
-
-  
+return function (App $app): App {
+    // page d'accueil simple
+    $app->get('/', function (Request $request, Response $response): Response {
+        $response->getBody()->write('Bienvenue dans Toubilib API');
+        return $response;
+    });
 
     return $app;
 };
