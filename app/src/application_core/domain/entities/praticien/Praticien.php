@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace toubilib\core\domain\entities\praticien;
 
-final class Praticien
+class Praticien
 {
     public function __construct(
         private int $id,
@@ -12,9 +12,9 @@ final class Praticien
         private string $ville,
         private string $email,
         private string $specialite
-    ) {}
+    ) {
+    }
 
-    // --- Getters ---
     public function getId(): int
     {
         return $this->id;

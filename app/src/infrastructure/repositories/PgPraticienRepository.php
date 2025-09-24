@@ -3,11 +3,13 @@ namespace toubilib\infrastructure\repositories;
 
 use PDO;
 use toubilib\core\domain\entities\praticien\Praticien;
-use toubilib\core\domain\repositories\PraticienRepositoryInterface;
+use toubilib\infrastructure\repositories\PraticienRepositoryInterface;
 
 final class PgPraticienRepository implements PraticienRepositoryInterface
 {
-    public function __construct(private PDO $pdo) {}
+    public function __construct(private PDO $pdo)
+    {
+    }
 
     public function findAll(): array
     {
@@ -27,12 +29,12 @@ final class PgPraticienRepository implements PraticienRepositoryInterface
         $list = [];
         foreach ($rows as $r) {
             $list[] = new Praticien(
-                (int)$r['id'],
-                (string)$r['nom'],
-                (string)$r['prenom'],
-                (string)$r['ville'],
-                (string)$r['email'],
-                (string)$r['specialite']
+                (int) $r['id'],
+                (string) $r['nom'],
+                (string) $r['prenom'],
+                (string) $r['ville'],
+                (string) $r['email'],
+                (string) $r['specialite']
             );
         }
         return $list;
