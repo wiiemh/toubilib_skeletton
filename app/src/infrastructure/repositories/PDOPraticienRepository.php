@@ -5,13 +5,11 @@ namespace toubilib\infrastructure\repositories;
 
 use PDO;
 use toubilib\core\domain\entities\praticien\Praticien;
-
+use toubilib\core\domain\entities\praticien\repositories\PraticienRepositoryInterface;
 
 final class PDOPraticienRepository implements PraticienRepositoryInterface
 {
-    public function __construct(private PDO $pdo)
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function findAll(): array
     {
@@ -22,17 +20,16 @@ final class PDOPraticienRepository implements PraticienRepositoryInterface
 
         $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-        $list = [];
-        foreach ($rows as $r) {
-            $list[] = new Praticien(
+        return array_map(
+            fn(array $r) => new Praticien(
                 (int) $r['id'],
                 (string) $r['nom'],
                 (string) $r['prenom'],
                 (string) $r['ville'],
                 (string) $r['email'],
                 (string) $r['specialite']
-            );
-        }
-        return $list;
+            ),
+            $rows
+        );
     }
 }

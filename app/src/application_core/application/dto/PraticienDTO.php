@@ -1,37 +1,42 @@
 <?php
+declare(strict_types=1);
+
 namespace toubilib\core\application\dto;
 
 use toubilib\core\domain\entities\praticien\Praticien;
 
-class PraticienDTO
+final class PraticienDTO
 {
-    public int $id;
-    public string $nom;
-    public string $prenom;
-    public string $ville;
-    public string $email;
-    public string $specialite;
-    public function __construct(int $id, string $nom, string $prenom, string $ville, string $email, string $specialite)
-    {
+    public function __construct(
+        public readonly int $id,
+        public readonly string $nom,
+        public readonly string $prenom,
+        public readonly string $ville,
+        public readonly string $email,
+        public readonly string $specialite
+    ) {}
 
-        $this->id = (int) $this->id;
-        $this->nom = (string) $this->nom;
-        $this->prenom = (string) $this->prenom;
-        $this->ville = (string) $this->ville;
-        $this->email = (string) $this->email;
-        $this->specialite = (string) $this->specialite;
-
-    }
-
-    public static function fromEntity(Praticien $entity): self
+    public static function fromEntity(Praticien $p): self
     {
         return new self(
-            $entity->getId(),
-            $entity->getNom(),
-            $entity->getPrenom(),
-            $entity->getVille(),
-            $entity->getEmail(),
-            $entity->getSpecialite()
+            $p->getId(),
+            $p->getNom(),
+            $p->getPrenom(),
+            $p->getVille(),
+            $p->getEmail(),
+            $p->getSpecialite()
         );
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id'         => $this->id,
+            'nom'        => $this->nom,
+            'prenom'     => $this->prenom,
+            'ville'      => $this->ville,
+            'email'      => $this->email,
+            'specialite' => $this->specialite,
+        ];
     }
 }
