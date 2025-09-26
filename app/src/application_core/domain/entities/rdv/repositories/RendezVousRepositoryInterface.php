@@ -12,4 +12,8 @@ interface RendezVousRepositoryInterface
     public function findBusyForPraticienBetween(string $praticienId, \DateTimeImmutable $from, \DateTimeImmutable $to): array;
 
     public function save(RendezVous $rdv): void;
+
+    /** @return RendezVous[] */
+    public function findForPraticienBetween(string $praticienId, \DateTimeImmutable $from, \DateTimeImmutable $to): array;
+
 }

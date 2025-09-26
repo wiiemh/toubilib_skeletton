@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace toubilib\core\domain\entities\rdv;
 
+use DomainException;
+
 class RendezVous
 {
     public function __construct(
@@ -13,6 +15,10 @@ class RendezVous
         private ?string $motif = null,
         private ?string $patientId = null,
         private ?string $patientEmail = null,
+        private string $etat = 'prevu',
+        private ?\DateTimeImmutable $dateAnnulation = null,
+        private ?string $raisonAnnulation = null,
+
     ) {
     }
     public function getId(): string
@@ -42,5 +48,31 @@ class RendezVous
     public function getPatientEmail(): ?string
     {
         return $this->patientEmail;
+    }
+    public function getEtat(): string
+    {
+        return $this->etat;
+    }
+    public function getDateAnnulation(): ?\DateTimeImmutable
+    {
+        return $this->dateAnnulation;
+    }
+    public function getRaisonAnnulation(): ?string
+    {
+        return $this->raisonAnnulation;
+    }
+    public function annuler(?string $raison = null): void
+    {
+        if ($this->etat === 'annule') {
+            throw new DomainException('Rendez-vous déjà annulé.');
+        }
+
+        if ($this->debut <= new \DateTimeImmutable()) {
+            throw new DomainException('Impossible d\'annuler un rendez-vous passé ou en cours.');
+        }
+
+        $this->etat = 'annule';
+        $this->dateAnnulation = new \DateTimeImmutable();
+        $this->raisonAnnulation = $raison;
     }
 }

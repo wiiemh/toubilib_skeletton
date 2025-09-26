@@ -20,22 +20,19 @@ class ServiceRendezVous implements ServiceRendezVousInterface
 
     public function creerRendezVous(InputRendezVousDTO $dto): void
     {
-        // 1. Vérifier que le praticien existe
         $praticien = $this->praticienRepository->findById($dto->praticienId);
         if (!$praticien) {
             throw new Exception("Praticien inexistant.");
         }
 
-        // 3. Vérifier que le motif est valide pour ce praticien
         if ($dto->motif && !in_array($dto->motif, $praticien->getMotifs())) {
             throw new Exception('Motif non autorisé pour ce praticien');
         }
 
-        // 4. Vérifier que le créneau horaire est valide (lundi-vendredi, 8h-19h)
         $debut = new \DateTimeImmutable($dto->debut);
         $fin = new \DateTimeImmutable($dto->fin);
 
-        $jourSemaine = (int) $debut->format('N'); // 1 = lundi, 7 = dimanche
+        $jourSemaine = (int) $debut->format('N');
         $heureDebut = (int) $debut->format('H');
         $heureFin = (int) $fin->format('H');
 
@@ -46,7 +43,6 @@ class ServiceRendezVous implements ServiceRendezVousInterface
             throw new Exception("L'horaire du rendez-vous doit être entre 8h et 19h, et la fin après le début.");
         }
 
-        // 5. Vérifier la disponibilité du praticien
         $rdvsOccupes = $this->rdvRepository->findBusyForPraticienBetween(
             $dto->praticienId,
             $debut,
@@ -56,7 +52,6 @@ class ServiceRendezVous implements ServiceRendezVousInterface
             throw new Exception("Le praticien n'est pas disponible sur ce créneau.");
         }
 
-        // 6. Créer et sauvegarder le rendez-vous
         $rdv = new RendezVous(
             $dto->id,
             $dto->praticienId,
@@ -69,4 +64,43 @@ class ServiceRendezVous implements ServiceRendezVousInterface
 
         $this->rdvRepository->save($rdv);
     }
+    public function annulerRendezVous(string $rdvId, ?string $raison = null): void
+    {
+        $id = (string) $rdvId;
+
+        $rdv = $this->rdvRepository->findById($id);
+        if (!$rdv) {
+            throw new Exception('Rendez-vous inexistant.');
+        }
+
+        try {
+            $rdv->annuler($raison);
+        } catch (\DomainException $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        $this->rdvRepository->save($rdv);
+    }
+
+    public function consulterAgenda(string $praticienId, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array
+    {
+        $from ??= new \DateTimeImmutable('today 00:00:00');
+        $to ??= new \DateTimeImmutable('today 23:59:59');
+
+        $rdvs = $this->rdvRepository->findForPraticienBetween($praticienId, $from, $to);
+
+        return array_map(fn(RendezVous $r) => [
+            'id' => $r->getId(),
+            'debut' => $r->getDebut()->format(DATE_ATOM),
+            'fin' => $r->getFin()->format(DATE_ATOM),
+            'motif' => $r->getMotif(),
+            'etat' => $r->getEtat(),
+            'patient' => $r->getPatientId() ? [
+                'id' => $r->getPatientId(),
+                'email' => $r->getPatientEmail(),
+                'link' => '/patients/' . rawurlencode($r->getPatientId())
+            ] : null
+        ], $rdvs);
+    }
+
 }

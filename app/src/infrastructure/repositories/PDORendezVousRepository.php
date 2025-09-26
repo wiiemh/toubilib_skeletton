@@ -84,4 +84,34 @@ class PDORendezVousRepository implements RendezVousRepositoryInterface
             ':motif_visite' => $rdv->getMotif(),
         ]);
     }
+
+    public function findForPraticienBetween(string $praticienId, \DateTimeImmutable $from, \DateTimeImmutable $to): array
+    {
+        $sql = "SELECT * FROM rendezvous
+            WHERE praticien_id = :praticienId
+              AND debut >= :from
+              AND fin <= :to
+            ORDER BY debut";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':praticienId' => $praticienId,
+            ':from' => $from->format('Y-m-d H:i:s'),
+            ':to' => $to->format('Y-m-d H:i:s'),
+        ]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return array_map(fn($r) => new RendezVous(
+            $r['id'],
+            $r['praticien_id'],
+            new \DateTimeImmutable($r['debut']),
+            new \DateTimeImmutable($r['fin']),
+            $r['motif'] ?? null,
+            $r['patient_id'] ?? null,
+            $r['patient_email'] ?? null,
+            $r['etat'] ?? 'prevu',
+            isset($r['date_annulation']) ? new \DateTimeImmutable($r['date_annulation']) : null,
+            $r['raison_annulation'] ?? null
+        ), $rows);
+    }
+
 }

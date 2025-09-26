@@ -15,7 +15,7 @@ class GetRendezVousAction
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $id = (string) $args['id'];
+        $id = (string) $args['id'] ?? null;
         $dto = $this->agenda->getRendezVous($id);
 
         if (!$dto) {

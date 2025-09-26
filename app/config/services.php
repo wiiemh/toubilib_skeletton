@@ -12,6 +12,10 @@ use toubilib\core\domain\entities\rdv\repositories\RendezVousRepositoryInterface
 use toubilib\infrastructure\repositories\PDORendezVousRepository;
 use toubilib\core\application\usecases\AgendaPraticien;
 use toubilib\core\application\usecases\AgendaPraticienInterface;
+use toubilib\core\application\usecases\ServiceRendezVous;
+use toubilib\core\application\usecases\ServiceRendezVousInterface;
+
+use function DI\autowire;
 
 return [
     // 3 connexions PDO
@@ -31,7 +35,7 @@ return [
         return new PDO($dsn, $db['user'], $db['pass'], $db['options']);
     },
 
-    // câblage deps
+        // câblage deps
     PraticienRepositoryInterface::class => static fn($c)
         => new PDOPraticienRepository($c->get('pdo.prat')),
     ServicePraticienInterface::class => static fn($c)
@@ -41,4 +45,10 @@ return [
         => new PDORendezVousRepository($c->get('pdo.rdv')),
     AgendaPraticienInterface::class => static fn($c)
         => new AgendaPraticien($c->get(RendezVousRepositoryInterface::class)),
+
+    ServiceRendezVousInterface::class => static fn($c)
+        => new ServiceRendezVous(
+            $c->get(PraticienRepositoryInterface::class),
+            $c->get(RendezVousRepositoryInterface::class)
+        ),
 ];
