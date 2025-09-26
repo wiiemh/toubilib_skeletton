@@ -2,14 +2,24 @@
 declare(strict_types=1);
 
 use DI\ContainerBuilder;
-use toubilib\core\application\usecases\ServicePraticienInterface;
-use toubilib\core\application\usecases\ServicePraticien;
-use toubilib\core\domain\entities\praticien\repositories\PraticienRepositoryInterface;
-use toubilib\infrastructure\repositories\PDOPraticienRepository;
+use Slim\Factory\AppFactory;
 
-return static function (ContainerBuilder $builder): void {
-    $builder->addDefinitions([
-        PraticienRepositoryInterface::class => \DI\autowire(PDOPraticienRepository::class),
-        ServicePraticienInterface::class    => \DI\autowire(ServicePraticien::class),
-    ]);
-};
+require __DIR__ . '/../vendor/autoload.php';
+
+Dotenv\Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
+
+$builder = new ContainerBuilder();
+$builder->useAutowiring(false);
+$builder->addDefinitions(__DIR__ . '/settings.php');
+$builder->addDefinitions(__DIR__ . '/services.php');
+$builder->addDefinitions(__DIR__ . '/api.php');
+
+$container = $builder->build();
+
+$app = AppFactory::createFromContainer($container);
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, false, false);
+
+(require dirname(__DIR__) . '/src/api/routes.php')($app);
+
+return $app;

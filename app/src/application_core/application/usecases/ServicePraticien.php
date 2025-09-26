@@ -8,13 +8,14 @@ use toubilib\core\domain\entities\praticien\repositories\PraticienRepositoryInte
 
 final class ServicePraticien implements ServicePraticienInterface
 {
-    public function __construct(
-        private PraticienRepositoryInterface $repo
-    ) {}
-
+    public function __construct(private PraticienRepositoryInterface $repo) {}
     public function listerPraticiens(): array
     {
-        $entities = $this->repo->findAll();
-        return array_map(fn($p) => PraticienDTO::fromEntity($p), $entities);
+        return array_map(fn($p) => PraticienDTO::fromEntity($p), $this->repo->findAll());
+    }
+    public function getPraticien(string $id): ?PraticienDTO
+    {
+        $p = $this->repo->findById($id);
+        return $p ? PraticienDTO::fromEntity($p) : null;
     }
 }

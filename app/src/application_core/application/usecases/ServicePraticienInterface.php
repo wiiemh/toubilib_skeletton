@@ -9,4 +9,5 @@ interface ServicePraticienInterface
 {
     /** @return PraticienDTO[] */
     public function listerPraticiens(): array;
+    public function getPraticien(string $id): ?PraticienDTO;
 }

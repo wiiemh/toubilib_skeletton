@@ -9,4 +9,5 @@ interface PraticienRepositoryInterface
 {
     /** @return Praticien[] */
     public function findAll(): array;
+    public function findById(string $id): ?Praticien;
 }

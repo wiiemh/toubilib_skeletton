@@ -1,25 +1,21 @@
 <?php
 declare(strict_types=1);
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use toubilib\core\application\usecases\ServicePraticienInterface;
+use toubilib\api\actions\{
+    ListerPraticiensAction,
+    GetPraticienAction,
+    GetCreneauxPraticienAction,
+    GetRendezVousAction
+};
 
 return function (App $app): void {
+    $app->get('/', fn($req, $res) =>
+        $res->getBody()->write('Bienvenue dans Toubilib API') ? $res : $res
+    );
 
-    // GET /praticiens -> liste des praticiens en JSON
-    $app->get('/praticiens', function (Request $request, Response $response) {
-        /** @var ServicePraticienInterface $service */
-        $service = $this->get(ServicePraticienInterface::class);
-
-        $dtos = $service->listerPraticiens();
-        $payload = array_map(fn($dto) => $dto->toArray(), $dtos);
-
-        $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_UNICODE));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
-    });
-
+    $app->get('/praticiens', ListerPraticiensAction::class);
+    $app->get('/praticiens/{id}', GetPraticienAction::class);               // UUID accepté
+    $app->get('/praticiens/{id}/creneaux', GetCreneauxPraticienAction::class);
+    $app->get('/rdv/{id}', GetRendezVousAction::class);
 };
