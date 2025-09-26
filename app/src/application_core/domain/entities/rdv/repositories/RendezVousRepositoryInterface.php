@@ -10,4 +10,6 @@ interface RendezVousRepositoryInterface
     public function findById(string $id): ?RendezVous;
     /** @return RendezVous[] */
     public function findBusyForPraticienBetween(string $praticienId, \DateTimeImmutable $from, \DateTimeImmutable $to): array;
+
+    public function save(RendezVous $rdv): void;
 }

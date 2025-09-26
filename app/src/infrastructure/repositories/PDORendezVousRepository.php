@@ -5,10 +5,13 @@ namespace toubilib\infrastructure\repositories;
 
 use toubilib\core\domain\entities\rdv\RendezVous;
 use toubilib\core\domain\entities\rdv\repositories\RendezVousRepositoryInterface;
+use toubilib\core\application\dto\InputRendezVousDTO;
 
 final class PDORendezVousRepository implements RendezVousRepositoryInterface
 {
-    public function __construct(private \PDO $pdo) {}
+    public function __construct(private \PDO $pdo)
+    {
+    }
 
     public function findById(string $id): ?RendezVous
     {
@@ -19,11 +22,12 @@ final class PDORendezVousRepository implements RendezVousRepositoryInterface
         $st = $this->pdo->prepare($sql);
         $st->execute([':id' => $id]);
         $r = $st->fetch(\PDO::FETCH_ASSOC);
-        if (!$r) return null;
+        if (!$r)
+            return null;
 
         return new RendezVous(
-            (string)$r['id'],
-            (string)$r['praticien_id'],
+            (string) $r['id'],
+            (string) $r['praticien_id'],
             new \DateTimeImmutable($r['date_heure_debut']),
             new \DateTimeImmutable($r['date_heure_fin']),
             $r['motif_visite'] ?? null,
@@ -43,20 +47,41 @@ final class PDORendezVousRepository implements RendezVousRepositoryInterface
                 ORDER BY date_heure_debut ASC";
         $st = $this->pdo->prepare($sql);
         $st->execute([
-            ':pid'  => $praticienId,
+            ':pid' => $praticienId,
             ':from' => $from->format('Y-m-d H:i:s'),
-            ':to'   => $to->format('Y-m-d H:i:s'),
+            ':to' => $to->format('Y-m-d H:i:s'),
         ]);
         $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
 
         return array_map(fn($r) => new RendezVous(
-            (string)$r['id'],
-            (string)$r['praticien_id'],
+            (string) $r['id'],
+            (string) $r['praticien_id'],
             new \DateTimeImmutable($r['date_heure_debut']),
             new \DateTimeImmutable($r['date_heure_fin']),
             $r['motif_visite'] ?? null,
             $r['patient_id'] ?? null,
             $r['patient_email'] ?? null,
         ), $rows);
+    }
+
+    public function save(RendezVous $rdv): void
+    {
+        $sql = "INSERT INTO public.rdv (
+                    id, praticien_id, patient_id, patient_email,
+                    date_heure_debut, date_heure_fin, motif_visite
+                ) VALUES (
+                    :id, :praticien_id, :patient_id, :patient_email,
+                    :date_heure_debut, :date_heure_fin, :motif_visite
+                )";
+        $st = $this->pdo->prepare($sql);
+        $st->execute([
+            ':id' => $rdv->getId(),
+            ':praticien_id' => $rdv->getPatientId(),
+            ':patient_id' => $rdv->getPatientId(),
+            ':patient_email' => $rdv->getPatientEmail(),
+            ':date_heure_debut' => $rdv->getDebut()->format('Y-m-d H:i:s'),
+            ':date_heure_fin' => $rdv->getFin()->format('Y-m-d H:i:s'),
+            ':motif_visite' => $rdv->getMotif(),
+        ]);
     }
 }
