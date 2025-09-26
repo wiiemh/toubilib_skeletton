@@ -6,7 +6,7 @@ namespace toubilib\infrastructure\repositories;
 use toubilib\core\domain\entities\praticien\Praticien;
 use toubilib\core\domain\entities\praticien\repositories\PraticienRepositoryInterface;
 
-final class PDOPraticienRepository implements PraticienRepositoryInterface
+class PDOPraticienRepository implements PraticienRepositoryInterface
 {
     public function __construct(private \PDO $pdo)
     {

@@ -5,7 +5,7 @@ namespace toubilib\core\application\dto;
 
 use toubilib\core\domain\entities\rdv\RendezVous;
 
-final class RendezVousDTO
+class RendezVousDTO
 {
     public function __construct(
         public readonly string $id,
@@ -15,23 +15,32 @@ final class RendezVousDTO
         public readonly ?string $motif,
         public readonly ?string $patientId,
         public readonly ?string $patientEmail,
-    ) {}
+    ) {
+    }
 
     public static function fromEntity(RendezVous $r): self
     {
         return new self(
-            $r->getId(), $r->getPraticienId(),
-            $r->getDebut()->format(DATE_ATOM), $r->getFin()->format(DATE_ATOM),
-            $r->getMotif(), $r->getPatientId(), $r->getPatientEmail()
+            $r->getId(),
+            $r->getPraticienId(),
+            $r->getDebut()->format(DATE_ATOM),
+            $r->getFin()->format(DATE_ATOM),
+            $r->getMotif(),
+            $r->getPatientId(),
+            $r->getPatientEmail()
         );
     }
 
     public function toArray(): array
     {
         return [
-            'id' => $this->id, 'praticienId' => $this->praticienId,
-            'debut' => $this->debut, 'fin' => $this->fin,
-            'motif' => $this->motif, 'patientId' => $this->patientId, 'patientEmail' => $this->patientEmail,
+            'id' => $this->id,
+            'praticienId' => $this->praticienId,
+            'debut' => $this->debut,
+            'fin' => $this->fin,
+            'motif' => $this->motif,
+            'patientId' => $this->patientId,
+            'patientEmail' => $this->patientEmail,
         ];
     }
 }

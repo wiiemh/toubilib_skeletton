@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace toubilib\core\domain\entities\praticien;
 
-final class Praticien
+class Praticien
 {
     public function __construct(
         private string $id,

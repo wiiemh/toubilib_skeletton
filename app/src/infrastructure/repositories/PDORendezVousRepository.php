@@ -7,7 +7,7 @@ use toubilib\core\domain\entities\rdv\RendezVous;
 use toubilib\core\domain\entities\rdv\repositories\RendezVousRepositoryInterface;
 use toubilib\core\application\dto\InputRendezVousDTO;
 
-final class PDORendezVousRepository implements RendezVousRepositoryInterface
+class PDORendezVousRepository implements RendezVousRepositoryInterface
 {
     public function __construct(private \PDO $pdo)
     {

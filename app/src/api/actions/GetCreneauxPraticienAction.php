@@ -7,32 +7,39 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use toubilib\core\application\usecases\AgendaPraticienInterface;
 
-final class GetCreneauxPraticienAction
+class GetCreneauxPraticienAction
 {
-    public function __construct(private AgendaPraticienInterface $agenda) {}
+    public function __construct(private AgendaPraticienInterface $agenda)
+    {
+    }
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $pid  = (string)$args['id'];
-        $q    = $request->getQueryParams();
+        $pid = (string) $args['id'];
+        $q = $request->getQueryParams();
         $from = $this->parse($q['from'] ?? null);
-        $to   = $this->parse($q['to']   ?? null);
+        $to = $this->parse($q['to'] ?? null);
 
         if (!$from || !$to || $from >= $to) {
             $response->getBody()->write(json_encode(['error' => 'Invalid or missing from/to'], JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type','application/json')->withStatus(400);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
         $dtos = $this->agenda->getCreneauxOccupes($pid, $from, $to);
         $payload = array_map(fn($d) => $d->toArray(), $dtos);
 
         $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_UNICODE));
-        return $response->withHeader('Content-Type','application/json');
+        return $response->withHeader('Content-Type', 'application/json');
     }
 
     private function parse(?string $s): ?\DateTimeImmutable
     {
-        if (!$s) return null;
-        try { return new \DateTimeImmutable($s); } catch (\Throwable) { return null; }
+        if (!$s)
+            return null;
+        try {
+            return new \DateTimeImmutable($s);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

@@ -8,22 +8,24 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use toubilib\core\application\usecases\ServicePraticienInterface;
 use toubilib\core\application\usecases\AgendaPraticienInterface;
 
-final class ListerPraticiensAction
+class ListerPraticiensAction
 {
     public function __construct(
         private ServicePraticienInterface $service,
         private AgendaPraticienInterface $agenda
-    ) {}
+    ) {
+    }
 
     public function __invoke(Request $request, Response $response): Response
     {
         $q = $request->getQueryParams();
-        $includeNext = isset($q['include']) && strtolower((string)$q['include']) === 'next';
+        $includeNext = isset($q['include']) && strtolower((string) $q['include']) === 'next';
 
-        $from = null; $to = null;
+        $from = null;
+        $to = null;
         if ($includeNext) {
             $from = $this->parseDate($q['from'] ?? 'now');
-            $to   = $this->parseDate($q['to']   ?? '+30 days');
+            $to = $this->parseDate($q['to'] ?? '+30 days');
             if (!$from || !$to || $from >= $to) {
                 $response->getBody()->write(json_encode(['error' => 'Invalid or missing from/to'], JSON_UNESCAPED_UNICODE));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
@@ -48,7 +50,12 @@ final class ListerPraticiensAction
 
     private function parseDate(?string $s): ?\DateTimeImmutable
     {
-        if (!$s) return null;
-        try { return new \DateTimeImmutable($s); } catch (\Throwable) { return null; }
+        if (!$s)
+            return null;
+        try {
+            return new \DateTimeImmutable($s);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

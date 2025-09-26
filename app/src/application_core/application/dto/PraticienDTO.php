@@ -5,7 +5,7 @@ namespace toubilib\core\application\dto;
 
 use toubilib\core\domain\entities\praticien\Praticien;
 
-final class PraticienDTO
+class PraticienDTO
 {
     public function __construct(
         public readonly string $id,

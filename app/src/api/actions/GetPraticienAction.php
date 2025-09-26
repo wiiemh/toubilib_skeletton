@@ -7,13 +7,15 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use toubilib\core\application\usecases\ServicePraticienInterface;
 
-final class GetPraticienAction
+class GetPraticienAction
 {
-    public function __construct(private ServicePraticienInterface $service) {}
+    public function __construct(private ServicePraticienInterface $service)
+    {
+    }
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $id  = (string)$args['id'];
+        $id = (string) $args['id'];
         $dto = $this->service->getPraticien($id);
         if (!$dto) {
             $response->getBody()->write(json_encode(['error' => 'Praticien not found'], JSON_UNESCAPED_UNICODE));
