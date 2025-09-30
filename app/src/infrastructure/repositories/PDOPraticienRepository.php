@@ -6,22 +6,35 @@ namespace toubilib\infrastructure\repositories;
 use toubilib\core\domain\entities\praticien\Praticien;
 use toubilib\core\domain\entities\praticien\repositories\PraticienRepositoryInterface;
 
-final class PDOPraticienRepository implements PraticienRepositoryInterface
+class PDOPraticienRepository implements PraticienRepositoryInterface
 {
     public function __construct(private \PDO $pdo)
     {
     }
 
+    /**
+     * @return Praticien[]
+     */
     public function findAll(): array
     {
-        $sql = "SELECT p.id, p.nom, p.prenom, p.ville, p.email, s.libelle AS specialite, mv.libelle AS motif
-                FROM public.praticien p
-                JOIN public.specialite s ON s.id = p.specialite_id
-                LEFT JOIN public.praticien2motif p2m ON p2m.praticien_id = p.id
-                LEFT JOIN public.motif_visite mv ON mv.id = p2m.motif_id
-                ORDER BY p.nom, p.prenom";
+        $sql = "
+            SELECT p.id,
+                   p.nom,
+                   p.prenom,
+                   p.ville,
+                   p.email,
+                   s.libelle AS specialite,
+                   mv.libelle AS motif
+            FROM public.praticien p
+            JOIN public.specialite s ON s.id = p.specialite_id
+            LEFT JOIN public.praticien2motif p2m ON p2m.praticien_id = p.id
+            LEFT JOIN public.motif_visite mv ON mv.id = p2m.motif_id
+            ORDER BY p.nom, p.prenom
+        ";
+
         $rows = $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
         $grouped = [];
+
         foreach ($rows as $r) {
             $id = (string) $r['id'];
             if (!isset($grouped[$id])) {
@@ -60,12 +73,21 @@ final class PDOPraticienRepository implements PraticienRepositoryInterface
     public function findById(string $id): ?Praticien
     {
         $sql = "
-            SELECT p.id, p.nom, p.prenom, p.specialite_id, mv.libelle AS motif
+            SELECT p.id,
+                   p.nom,
+                   p.prenom,
+                   p.ville,
+                   p.email,
+                   s.libelle AS specialite,
+                   p.specialite_id,
+                   mv.libelle AS motif
             FROM public.praticien p
+            JOIN public.specialite s ON s.id = p.specialite_id
             LEFT JOIN public.praticien2motif p2m ON p2m.praticien_id = p.id
             LEFT JOIN public.motif_visite mv ON mv.id = p2m.motif_id
             WHERE p.id = :id
         ";
+
         $st = $this->pdo->prepare($sql);
         $st->execute([':id' => $id]);
         $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
@@ -73,6 +95,7 @@ final class PDOPraticienRepository implements PraticienRepositoryInterface
         if (empty($rows)) {
             return null;
         }
+
         $motifs = [];
         $specialiteId = null;
         foreach ($rows as $r) {
@@ -84,6 +107,7 @@ final class PDOPraticienRepository implements PraticienRepositoryInterface
             }
         }
         $motifs = array_values(array_unique($motifs));
+
         if (empty($motifs) && $specialiteId !== null) {
             $sql2 = "SELECT libelle FROM public.motif_visite WHERE specialite_id = :sid";
             $st2 = $this->pdo->prepare($sql2);
@@ -106,7 +130,7 @@ final class PDOPraticienRepository implements PraticienRepositoryInterface
             $first['ville'] ?? '',
             $first['email'] ?? '',
             $first['specialite'] ?? '',
-            $motifs,
+            $motifs
         );
     }
 }

@@ -21,9 +21,9 @@ return function (App $app): void {
     $app->get('/praticiens', ListerPraticiensAction::class);
     $app->get('/praticiens/{id}', GetPraticienAction::class);
     $app->get('/praticiens/{id}/creneaux', GetCreneauxPraticienAction::class);
-    $app->get('/rdv/{id}', GetRendezVousAction::class);
-    $app->delete('/annulerrdv/{id}', AnnulerRendezVousAction::class);
-    $app->get('/agenda/{id}', ConsulterAgendaAction::class);
+    $app->get('/rendezvous/{id}', GetRendezVousAction::class);
+    $app->delete('/rendezvous/{id}', AnnulerRendezVousAction::class);
+    $app->get('/praticiens/{id}/agenda', ConsulterAgendaAction::class);
 
 
 };
